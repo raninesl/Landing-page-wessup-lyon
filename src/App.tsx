@@ -38,6 +38,7 @@ const programCategories = [
         title: "BTS Cybersécurité",
         duration: "2 ans",
         level: "Bac +2",
+        isEnglish: false,
         description: "Formation spécialisée en sécurité informatique et protection des données."
       }
     ]
@@ -144,7 +145,7 @@ export default function App() {
       // Option B: Google Sheets Webhook URL
       const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyx6XW0wRsXGjKqa9vtB9sVjPTThTMjyvsqdaAcVh6RMgJ9zGhbkfTOimCL79Dkc99G/exec"; 
 
-      const response = await fetch(WEBHOOK_URL, {
+      await fetch(WEBHOOK_URL, {
         method: "POST",
         mode: "no-cors", // Nécessaire pour certains Webhooks Google Scripts
         headers: {
