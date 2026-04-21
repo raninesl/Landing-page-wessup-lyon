@@ -14,7 +14,9 @@ import {
   X,
   ChevronDown,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Pause,
+  Play
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import heroImage from './assets/hero.png';
@@ -22,6 +24,14 @@ import logoTransparent from './assets/logo_transparent.png';
 import aff1 from './assets/aff1.png';
 import aff2 from './assets/aff2.png';
 import aff3 from './assets/aff3.png';
+import btsCyber from './assets/BTS CyberSécurité (1).pdf';
+import bachelorDigital from './assets/Bachelor in Digital Business  & IT Development.pdf';
+import bachelorHospitality from './assets/Bachelor in Hospitality & Tourism Management.pdf';
+import bachelorBba from './assets/Bachelor in business administration (BBA).pdf';
+import bachelorMarketing from './assets/Bachelor in marketing &  communication.pdf';
+import mastereMba from './assets/Mastère in Business Management & Strategy (MBA).pdf';
+import mastereHr from './assets/Mastère in Human  Resources Management.pdf';
+import mastereMarketing from './assets/Mastère in Marketing & Communication.pdf';
 
 const campuses = [
   { name: "Campus de Lyon", url: "#hero" },
@@ -115,18 +125,44 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [currentPoster, setCurrentPoster] = useState(0);
+  const [isPosterPaused, setIsPosterPaused] = useState(false);
   
   const posters = [aff1, aff2, aff3];
 
   useEffect(() => {
+    if (isPosterPaused) return;
     const timer = setInterval(() => {
       setCurrentPoster((prev) => (prev + 1) % posters.length);
-    }, 2000);
+    }, 3000);
     return () => clearInterval(timer);
-  }, [posters.length]);
+  }, [isPosterPaused, posters.length]);
 
   const nextPoster = () => setCurrentPoster((prev) => (prev + 1) % posters.length);
   const prevPoster = () => setCurrentPoster((prev) => (prev - 1 + posters.length) % posters.length);
+
+  const [currentProgramPoster, setCurrentProgramPoster] = useState(0);
+  const [isProgramPosterPaused, setIsProgramPosterPaused] = useState(false);
+  const programPosters = [
+    { src: btsCyber, title: 'BTS Cybersécurité' },
+    { src: bachelorHospitality, title: 'Bachelor in Hospitality & Tourism Management' },
+    { src: bachelorDigital, title: 'Bachelor in Digital Business & IT Development' },
+    { src: bachelorBba, title: 'Bachelor in Business Administration (BBA)' },
+    { src: bachelorMarketing, title: 'Bachelor in Marketing & Communication' },
+    { src: mastereMba, title: 'Mastère in Business Management & Strategy (MBA)' },
+    { src: mastereMarketing, title: 'Mastère in Marketing & Communication' },
+    { src: mastereHr, title: 'Mastère in Human Resources Management' },
+  ];
+
+  useEffect(() => {
+    if (isProgramPosterPaused) return;
+    const timer = setInterval(() => {
+      setCurrentProgramPoster((prev) => (prev + 1) % programPosters.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [isProgramPosterPaused, programPosters.length]);
+
+  const nextProgramPoster = () => setCurrentProgramPoster((prev) => (prev + 1) % programPosters.length);
+  const prevProgramPoster = () => setCurrentProgramPoster((prev) => (prev - 1 + programPosters.length) % programPosters.length);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -390,8 +426,16 @@ Lyon
       {/* Posters Carousel Section */}
       <section className="py-12 bg-slate-50 overflow-hidden">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">Actualités</h3>
+          </div>
           <div className="relative group">
-            <div className="relative h-[400px] sm:h-[600px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-white">
+            <a
+              href={posters[currentPoster]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block relative h-[400px] sm:h-[600px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-white cursor-pointer"
+            >
               <AnimatePresence mode="wait">
                 <motion.img
                   key={currentPoster}
@@ -407,18 +451,24 @@ Lyon
 
               {/* Navigation Arrows */}
               <button 
-                onClick={prevPoster}
+                onClick={(e) => { e.preventDefault(); prevPoster(); }}
                 className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-lg hover:bg-orange-600 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-10"
               >
                 <ChevronLeft size={24} />
               </button>
               <button 
-                onClick={nextPoster}
+                onClick={(e) => { e.preventDefault(); nextPoster(); }}
                 className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-lg hover:bg-orange-600 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-10"
               >
                 <ChevronRight size={24} />
               </button>
-            </div>
+              <button
+                onClick={(e) => { e.preventDefault(); setIsPosterPaused((v) => !v); }}
+                className="absolute top-4 right-4 w-11 h-11 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-lg hover:bg-orange-600 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-10"
+              >
+                {isPosterPaused ? <Play size={20} /> : <Pause size={20} />}
+              </button>
+            </a>
 
             {/* Indicators */}
             <div className="flex justify-center gap-3 mt-8">
@@ -428,6 +478,72 @@ Lyon
                   onClick={() => setCurrentPoster(idx)}
                   className={`h-2.5 rounded-full transition-all duration-300 ${
                     currentPoster === idx ? 'w-8 bg-orange-600' : 'w-2.5 bg-slate-300 hover:bg-slate-400'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Program Posters Carousel Section */}
+      <section className="pb-16 bg-slate-50 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">Affiches Programmes</h3>
+          </div>
+
+          <div className="relative group">
+            <a
+              href={programPosters[currentProgramPoster].src}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block relative h-[480px] sm:h-[680px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-white cursor-pointer"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentProgramPoster}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="w-full h-full"
+                >
+                  <iframe
+                    title={programPosters[currentProgramPoster].title}
+                    src={`${programPosters[currentProgramPoster].src}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                    className="w-full h-full pointer-events-none"
+                  />
+                </motion.div>
+              </AnimatePresence>
+
+              <button
+                onClick={(e) => { e.preventDefault(); prevProgramPoster(); }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-lg hover:bg-orange-600 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-10"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={(e) => { e.preventDefault(); nextProgramPoster(); }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-lg hover:bg-orange-600 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-10"
+              >
+                <ChevronRight size={24} />
+              </button>
+              <button
+                onClick={(e) => { e.preventDefault(); setIsProgramPosterPaused((v) => !v); }}
+                className="absolute top-4 right-4 w-11 h-11 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-lg hover:bg-orange-600 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-10"
+              >
+                {isProgramPosterPaused ? <Play size={20} /> : <Pause size={20} />}
+              </button>
+            </a>
+
+            <div className="flex justify-center gap-3 mt-8">
+              {programPosters.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentProgramPoster(idx)}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
+                    currentProgramPoster === idx ? 'w-8 bg-orange-600' : 'w-2.5 bg-slate-300 hover:bg-slate-400'
                   }`}
                 />
               ))}
