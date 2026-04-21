@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Calendar, 
   MapPin, 
@@ -12,11 +12,16 @@ import {
   Linkedin, 
   Menu, 
   X,
-  ChevronDown
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import heroImage from './assets/hero.png';
 import logoTransparent from './assets/logo_transparent.png';
+import aff1 from './assets/aff1.png';
+import aff2 from './assets/aff2.png';
+import aff3 from './assets/aff3.png';
 
 const campuses = [
   { name: "Campus de Lyon", url: "#hero" },
@@ -108,6 +113,20 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [currentPoster, setCurrentPoster] = useState(0);
+  
+  const posters = [aff1, aff2, aff3];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentPoster((prev) => (prev + 1) % posters.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [posters.length]);
+
+  const nextPoster = () => setCurrentPoster((prev) => (prev + 1) % posters.length);
+  const prevPoster = () => setCurrentPoster((prev) => (prev - 1 + posters.length) % posters.length);
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -363,6 +382,55 @@ Lyon
                 </div>
               </div>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Posters Carousel Section */}
+      <section className="py-12 bg-slate-50 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative group">
+            <div className="relative h-[400px] sm:h-[600px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-white">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={currentPoster}
+                  src={posters[currentPoster]}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="w-full h-full object-contain"
+                  alt={`Affiche ${currentPoster + 1}`}
+                />
+              </AnimatePresence>
+
+              {/* Navigation Arrows */}
+              <button 
+                onClick={prevPoster}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-lg hover:bg-orange-600 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-10"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button 
+                onClick={nextPoster}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-lg hover:bg-orange-600 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-10"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+
+            {/* Indicators */}
+            <div className="flex justify-center gap-3 mt-8">
+              {posters.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentPoster(idx)}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
+                    currentPoster === idx ? 'w-8 bg-orange-600' : 'w-2.5 bg-slate-300 hover:bg-slate-400'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
